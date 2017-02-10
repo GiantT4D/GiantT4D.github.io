@@ -1,15 +1,119 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>my profile</title>
-</head>
-
-<body>
-  <h1>一个有趣的测试</h1>
-  <p>这是另一个项目的链接：</p>
-  <a href="https://giantt4d.github.io/mygit/" target="_blank">另一个项目</a>
-  <a href="../../mygit/" target="_blank">相对路径</a>
-</body>
-
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>GiantT4D's Page</title>
+	
+	<style>
+		body{
+			margin: 0;
+			height: 963px;
+		}
+		
+		.left{
+			float: left;
+			width: 50%;
+			height: 963px;
+			
+			background: linear-gradient(to bottom, rgb(251,251,251), rgb(234,234,234) 48%, rgb(205,205,205) 80%, rgb(194,194,194));
+		}
+		
+		.right{
+			float: right;
+			width: 50%;
+			height: 963px;
+			
+			background: linear-gradient(to bottom, rgb(238,238,238), rgb(220,220,220) 28%, rgb(200,200,200) 55%, rgb(180,180,180));
+		}
+		
+		.page{
+			position: absolute;
+			left: 50%;
+			margin-left: -375px;
+			
+			width: 700px;
+			height: 963px;
+			box-sizing: border-box;
+			
+			padding: 200px 80px 95px 80px;
+			
+			background: url(background.jpg);
+		}
+		
+		h1{
+			position: relative;
+			
+			padding: .8em 0;
+			margin-left: -.5em;
+			margin-right: 1em;
+			
+			font-family: Broadway, "Times New Roman", Helvetica, sans-serif;
+			color: white;
+			text-align: center;
+			
+			background: #0C6A36;
+		
+			-webkit-margin-before: 0;
+			-webkit-margin-after: 0;
+		}
+		
+		h1:before{
+			position: absolute;
+			top: -.5em;
+			left: 0;
+			display: block;
+			
+			content: "";
+			border-right: .5em solid red;
+			border-top: .5em solid transparent;
+		}
+		
+		p{
+			font-family: 华文细黑, 宋体, sans-serif;
+			font-weight: bold;
+			color: #170117;
+			
+			margin-top: 25px;
+			margin-bottom: 25px;
+			
+			text-align: left;
+			text-indent: 2em;
+		}
+		
+		li{
+			font-family: 黑体, 宋体, sans-serif;
+			
+			margin-left: 120px;
+			padding: .25em 0;
+			
+			color: #170117;
+		}
+		
+		.introduction{
+			font-family: 华文行楷, 宋体, sans-serif;
+			font-size: 1.15em;
+			color: #E91E63;
+		}
+	</style>
+  </head>
+  
+  <body>
+	<div class="left"></div>
+	<div class="right"></div>
+  
+	<div class="page">
+		<h1>Welcome to my zone!</h1>
+		<p>以下是前端学习过程中的一些练习demo：</p>
+		
+		<ul>
+			<li><a href="">静态页面</a></li>
+			<li><a href="">轮播效果</a></li>
+			<li><a href="">图片放大</a></li>
+			<li><a href="">弹跳小球</a></li>
+			<li><a href="">3D悬浮板</a></li>
+		</ul>
+		
+		<p class="introduction">注：其中大部分内容来自<a href="http://ife.baidu.com/2016/task/all" target="_blank">百度前端学院</a>的任务，小部分改写自网络内容。</p>
+	</div>
+  </body>
 </html>
