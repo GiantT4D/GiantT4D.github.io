@@ -1,0 +1,132 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>弹跳小球</title>
+</head>
+
+<body>
+
+<script>
+	window.onload = function() {
+		ball = GOval(50, 50, 100, 100);
+		
+		ball.onclick = function() {
+			bounce(this);
+		}
+	};
+	
+	function GOval(len, width, x, y) {
+		// 创建画布
+		var canvas = document.getElementsByClassName('canvas')[0] || document.createElement('div');
+		
+		var body = document.getElementsByTagName('body')[0];
+		body.appendChild(canvas);
+		canvas.setAttribute('class', 'canvas');
+		
+		// 创建小球
+		var oval = document.createElement('div');
+		canvas.appendChild(oval);
+		
+		// 设置样式
+		var style = [];
+		style.push('position: absolute');
+		style.push('top: ' + y + 'px');
+		style.push('left: ' + x + 'px');
+		style.push('width: ' + len + 'px');
+		style.push('height: ' + width + 'px');
+		
+		
+		var divide = (width === len) ? ' ' : '/';
+		style.push('border-radius: ' + 0.5*len + 'px' + divide + 0.5*width + 'px');
+		style.push('border: 1px solid black');
+		
+		var str = style.join(';');
+		oval.setAttribute('style', str);
+		
+		return oval;
+	}
+	
+	function bounce(o, callback, time) {
+		// 视口的尺寸
+		var viewWidth = window.document.documentElement.clientWidth || window.document.body.innerWidth;
+		var viewHeight = window.document.documentElement.clientHeight || window.document.body.clientHeight;
+		
+		// 元素的坐标
+		var eltX = o.getBoundingClientRect().left;
+		var eltY = o.getBoundingClientRect().top;
+		
+		// 坐标的区间
+		var xMax = viewWidth - o.getBoundingClientRect().width;
+		var yMax = viewHeight - o.getBoundingClientRect().height;
+		
+		// 原始样式
+		var originStyle = o.style.cssText; // wtf, 竟然写成了o.style.cssTxt!!!
+		
+		// 时间变量
+		var time = time || 8000;
+		var start = (new Date()).getTime();
+		
+		// 垂直方向的变量
+		var t = 0, dt = 0.5; // dt为时间间隔
+		var v, vStart = 0;
+		var g = 10;
+		
+		var x;
+		var y, yStart = eltY;
+		
+		var count = 0;
+		
+		animate();
+		
+		function animate() {
+			var now = (new Date()).getTime();
+			var fraction = (now - start) / time;
+			
+			if (fraction < 1) {
+				// 小球Y坐标
+				v = vStart + g * t;
+				y = yStart + vStart * t + 0.5 * g * t * t;
+				t += dt;
+				
+				if (v < 0 && (v + g * dt) >= 0) { // 小球到达顶部
+					vStart = 0;
+					t = 0;
+					
+					yStart = y - 0.5 * v * v / g;
+				}
+				
+				if (y >= yMax && v > 0) { // 小球到达底部
+					vStart = -0.9 * v;
+					t = 0;
+					
+					if (v < 10*g*dt) vStart = 0; // 折中的做法
+			
+					y = yStart = yMax;
+					count++;
+				}
+				
+				// if (count > 8) {y = yMax;} // 碰撞一定次数后停止
+				
+				// 小球X坐标
+				var x = eltX + (xMax - eltX) * fraction;
+				
+				// 设置坐标
+				o.style.left = x + 'px';
+				o.style.top = y + 'px';
+				
+				setTimeout(animate, Math.min(25, time - (now - start)));
+			} else {
+				o.style.cssText = originStyle;
+				
+				if (callback) {
+					callback(o);
+				}
+			}
+		}
+	}
+</script>
+</body>
+
+</html>

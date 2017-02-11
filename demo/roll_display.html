@@ -1,0 +1,201 @@
+<DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<script src="jquery-3.1.1.js"></script>
+	<style>
+		/*====布局定位====*/
+		.demo{
+			position : relative;
+			margin : 80px auto;
+			
+			width : 900px;
+			height : 250px;
+		}
+		
+		.index{	
+			display : block;
+			
+			position : absolute;
+			left : 50%;
+			margin-left : -61px;
+			bottom : -20px;
+		}
+		
+		.button{
+			position : absolute;
+			margin : 0;
+			padding : 0;
+			
+			left : 40px;
+			margin-top : -17.5px;
+			bottom : 50%;
+		}
+		
+			.back{
+				margin-right : 760px; /*定位另一个按钮*/
+			}
+		
+		/*====指示圆圈====*/
+		.demo li{
+			list-style-type: none;  /*清楚列表默认标记*/
+		}
+		
+		.index li{
+			width : 20px;
+			height : 20px;
+			
+			border : 1px solid #666;
+			border-radius: 50%;
+			
+			display : inline-block;
+		}
+		
+		/*====翻页按钮====*/
+		.button li{
+			width : 30px;
+			height : 30px;
+			
+			border : 1px solid #eee;
+			position : relative;
+			
+			display : inline-block;
+		}
+		
+			.front:before{
+				content : "";
+				
+				border-left : 16px solid black;
+				border-top : 8px solid transparent;
+				border-bottom : 8px solid transparent;
+				
+				position : absolute;
+				top : 50%;
+				left : 50%;
+				margin-top : -8px;
+				margin-left : -8px;
+			}
+			
+			.back:before{
+				content : "";
+				
+				border-right : 16px solid black;
+				border-top : 8px solid transparent;
+				border-bottom : 8px solid transparent;
+				
+				position : absolute;
+				top : 50%;
+				left : 50%;
+				margin-top : -8px;
+				margin-left : -8px;
+			}
+		
+		/*====展示版面====*/
+		
+		.show li{
+			font-family : "黑体";
+			font-size : 3em;
+			
+			text-align : center;
+			line-height : 200px;
+		
+			width : 200px;
+			height : 200px;
+			
+			border : 1px solid #eee;
+			
+			display : inline-block;
+			background-color : #eb7575;
+		}
+	</style>
+	
+	<title>轮播演示</title>
+</head>
+
+<body>
+<div class="page">
+	<section class="demo">
+		<ul class="index">
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+		
+		<ul class="button">
+			<li class="back"></li>
+			<li class="front"></li>
+		</ul>
+		
+		<section class="show">
+			<ul>
+				<li>01</li>
+				<li>02</li>
+				<li>03</li>
+				<li>04</li>
+			</ul>
+			
+			<ul>
+				<li>05</li>
+				<li>06</li>
+				<li>07</li>
+				<li>08</li>
+			</ul>
+
+			<ul>
+				<li>09</li>
+				<li>10</li>
+				<li>11</li>
+				<li>12</li>
+			</ul>		
+		</section>
+	</section>
+	
+</div>
+
+<script>
+	//初始化显示
+	$('.show ul').hide().first().show();
+	$('.index li').first().css('background-color', 'green');
+
+	//向前按钮
+	$('.button .front').click(function(){
+		if($('.show ul, .index li').is(':animated')) {return;} //是否进行动画的判断
+	
+		var $current = $('.show ul').not('[style*=none]');//当前显示的列表
+		var $index = $('.index li').filter('[style*=green]');//当前的指示标记
+		
+		if($current.next().length){// 未到达最后一个列表时
+			$current.slideUp() //滑出当前列表
+				.next().show(); //显示下一个列表
+				
+			$index.css('background-color', 'transparent') //删除当前标记的背景
+				.next().css('background-color', 'green'); //添加下一个标记的背景
+				
+		}else{ //处理最后一个列表
+			$current.slideUp() //滑出当前列表
+				.prevAll().last().show(); //选取第一个元素，并将其显示
+			
+			$index.css('background-color', 'transparent') //删除当前标记的背景
+				.prevAll().last().css('background-color', 'green'); //选取第一个标记，并添加背景
+		}
+	});
+	
+	
+	//向后按钮
+	$('.button .back').click(function(){
+		var $current = $('.show ul').not('[style*=none]');
+		var $index = $('.index li').filter('[style*=green]');
+		
+		if($current.prev().length){
+			$current.slideUp().prev().show();
+			
+			$index.css('background-color', 'transparent')
+				.prev().css('background-color', 'green');
+		}else{
+			$current.slideUp().nextAll().last().show();
+			
+			$index.css('background-color', 'transparent')
+				.nextAll().last().css('background-color', 'green');
+		}
+	});
+</script>
+</body>

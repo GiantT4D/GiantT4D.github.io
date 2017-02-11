@@ -1,0 +1,169 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <meta charset="utf-8">
+	<script src="jquery-3.1.1.js"></script>
+	
+    <title>图片放大镜</title>
+	
+	
+	<style>
+		/*原始区域样式*/
+		.normal img{
+			width: 400px;
+			height: 400px;
+			
+			border: 1px solid #eee;
+		}
+		
+		.normal span{
+			position: absolute;
+
+			border: 1px solid red;
+			
+			background-color: blue;
+			
+			opacity: 0.25;
+			display: none;	
+		}
+	
+		/*放大区域样式*/
+		.zoom{
+			position : absolute;/*放大区域应该脱离文档流*/
+			top : 8px;
+			left : 450px;
+			
+			width : 430px;
+			height : 430px;
+			border : 1px solid #eee;
+			
+			display : none;
+			overflow : hidden;
+		}
+			
+		.zoom img{
+			position : relative;/*这里不能是绝对定位*/
+			
+			border : 1px solid red;
+		}
+	</style>
+</head>
+	
+<body>
+	<div class="normal">
+		<img src="example.jpg">
+		<span></span>
+	</div>
+	
+	<div class="zoom">
+		<img src="example.jpg">
+	</div>
+	
+	<script>
+	$(function(){
+		var $normImg = $('.normal img');// 原始图片
+		var $zoomImg = $('.zoom img'); // 放大图片
+
+		var $selectedArea = $('.normal span');// 选择区域
+		var $zoomArea = $('.zoom');// 放大区域
+
+		var zoom = 2; //放大因子
+		
+		
+		
+		//定义mousemove事件处理程序
+		function move(){
+			//图片显示区域尺寸
+			var zoomWidth = $normImg.innerWidth();
+			var zoomHeight = $normImg.innerHeight();
+			
+			$zoomArea.css({
+				display: 'block',
+				width: zoomWidth,
+				height: zoomHeight,
+			});
+		
+			//放大图片的尺寸
+			var zoomImgWidth = $normImg.innerWidth() * zoom;
+			var zoomImgHeight = $normImg.innerHeight() * zoom;
+			
+			$zoomImg.css({
+				width: zoomImgWidth,
+				height: zoomImgHeight
+			});
+			
+			//放大图片的位置
+			var zoomImgX = zoom * (event.clientX - $normImg.offset().left) - 1/2*$zoomArea.width();
+			var zoomImgY = zoom * (event.clientY - $normImg.offset().top) - 1/2*$zoomArea.height();
+			
+			//边界条件
+			var xMinZ = 0;
+			var xMaxZ = $zoomImg.outerWidth() - $zoomArea.width();
+			
+			var yMinZ = 0
+			var yMaxZ = $zoomImg.outerHeight() - $zoomArea.height();
+			
+			if(zoomImgX < xMinZ){zoomImgX = xMinZ;}
+			if(zoomImgX > xMaxZ){zoomImgX = xMaxZ;}
+			
+			if(zoomImgY < yMinZ){zoomImgY = yMinZ;}
+			if(zoomImgY > yMaxZ){zoomImgY = yMaxZ;}
+			
+			$zoomImg.css({
+				width: zoomImgWidth,
+				height: zoomImgHeight,
+				left: -zoomImgX,
+				top: -zoomImgY
+			});
+		
+			//选择区域尺寸
+			var selectedWidth = zoomWidth/zoom;
+			var selectedHeight = zoomHeight/zoom;
+			
+			$selectedArea.css({
+				display: 'block',
+				width: selectedWidth,
+				height: selectedHeight
+			});
+			
+			//选择区域位置
+			var selectedX = event.clientX - 1/2*$selectedArea.outerWidth();
+			var selectedY = event.clientY - 1/2*$selectedArea.outerHeight();
+			
+			var xMinS = $normImg.offset().left;
+			var xMaxS = $normImg.offset().left + $normImg.width() - $selectedArea.outerWidth();
+			
+			var yMinS = $normImg.offset().top;
+			var yMaxS = $normImg.offset().top + $normImg.height() - $selectedArea.outerHeight();
+			
+			if(selectedX < xMinS){selectedX = xMinS;}
+			if(selectedX > xMaxS){selectedX = xMaxS;}
+			
+			if(selectedY < yMinS){selectedY = yMinS;}
+			if(selectedY > yMaxS){selectedY = yMaxS;}
+			
+			$selectedArea.css({
+				left: selectedX,
+				top: selectedY
+			});
+
+		}
+
+		
+		//定义mouseout事件处理程序
+		function out(){
+			$zoomArea.css('display', 'none');
+			$selectedArea.css('display', 'none');
+		}
+
+		//为图片绑定事件
+		$normImg.bind({
+			mousemove: move,
+			mouseout: out
+		});
+	});	
+	</script>
+</body>
+
+</html>
