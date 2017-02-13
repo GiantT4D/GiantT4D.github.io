@@ -1,0 +1,297 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>task25</title>
+</head>
+
+<body>
+	<div class="tree">
+		<label for="data">文件夹名称：</label>
+		<input type="text" id="data">
+
+		<button type="button" id="insert">新建</button>
+		<button type="button" id="remove">删除</button>
+
+		<button type="button" id="find">查找</button>
+	</div>
+	
+	<p>
+		<p>说明：</p>
+		
+		<ul>
+			<li>新建：1）选中要新建子目录的文件夹；2）输入框中输入文件夹名称；3）单击“新建”按钮。</li>
+			<li>删除：1）选中要删除的文件夹；2）单击“删除”按钮。</li>
+			<li>查找：1）输入框中输入文件夹名称；2）单击“查找”按钮。</li>
+		</ul>
+	</p>
+	
+	<script>
+		// 创建新的节点
+		function node(data, parent) {
+			var current = document.createElement('div');
+			parent.appendChild(current);
+			
+			current.innerHTML = data;
+			
+			// 设置节点样式
+			var temp = [];
+			temp.push('display: block');
+			temp.push('margin-left: 2em'); // 缩进两字符
+			temp.push('padding: 5px');
+			temp.push('background-color: white');
+			
+			var style = temp.join(';');
+			
+			current.setAttribute('style', style);
+			
+			// 改变父节点样式
+			if(parent.childElementCount === 1) {
+				var arrow = document.createElement('span');
+			
+				parent.insertBefore(arrow, parent.childNodes[0]);
+				parent.style.marginLeft = '1em'; // 对齐文字
+				parent.setAttribute('data', 'multiple');
+				
+				
+				var arrowRight = 'display: inline-block;border-left: 1em solid red;border-top: 0.5em solid transparent;border-bottom: 0.5em solid transparent;';
+				
+				var arrowDown = 'display: inline-block;border-top: 1em solid red;border-left: 0.5em solid transparent;border-right: 0.5em solid transparent;';
+				
+				arrow.setAttribute('style', arrowDown);
+				arrow.setAttribute('data', 'unfold');
+				
+				// 绑定箭头的折-展开事件
+				arrow.onclick = function() {
+					var original = this.getAttribute('data');
+					
+					if (original === 'unfold') {
+						this.style = arrowRight;
+						this.setAttribute('data', 'fold');
+						
+						fold(this.parentNode);
+					} else {
+						this.style = arrowDown;
+						this.setAttribute('data', 'unfold');
+						
+						unfold(this.parentNode);
+					}
+				}
+			}
+
+			return current;
+		}
+
+		// 创建新的树
+		function multipleTree() {
+			// 新建根节点
+			var body = document.getElementsByTagName('body')[0];
+			var root = node('收藏夹', body);
+			
+			// 设置根节点样式
+			var EM = 16;
+			var width = 24 * EM;
+			
+			root.setAttribute('id', 'multipleTree');
+			root.style.width = width + 'px';
+			root.style.fontSize = EM + 'px';
+			root.style.border = '1px solid #666';
+			
+			root.onclick = function() {
+				var e = event || window.event;
+				var original = e.target.style.backgroundColor;
+				
+				reset();
+				
+				e.target.style.backgroundColor = (original === 'white' || original === 'red') ? 'green' : 'white';
+			}
+			
+			// 初始化根节点
+			node('音乐', root);
+			node('电影', root);
+			node('小说', root);
+		}
+		
+		// 遍历
+		function traverseBF(tree, callback) {
+			var queue = [];
+			var temp;
+			
+			queue.push(tree);
+
+			while (queue.length) {
+				temp = queue.shift();
+				
+				if (callback) {
+					callback(temp);
+				}
+				
+				for (var i = 0; i < temp.childElementCount; i++) {
+					queue.push(temp.children[i]);
+				}
+			}
+		}
+		
+		// 重置
+		function reset() {
+			var tree = document.getElementById('multipleTree');  
+			var callback = function(node) {
+				node.style.backgroundColor = 'white';
+			}
+			
+			traverseBF(tree, callback);
+		}
+		
+		// 折叠
+		function fold(parent) {
+			var callback = function(n) {
+				if (n.nodeName === 'DIV' && n !== parent) {
+					var arrowRight = 'display: inline-block;border-left: 1em solid red;border-top: 0.5em solid transparent;border-bottom: 0.5em solid transparent;'; 
+					
+					if (n.getAttribute('data') === 'multiple') {
+						n.firstChild.setAttribute('style', arrowRight);
+						n.firstChild.setAttribute('data', 'fold');
+					}
+					
+					n.style.display = 'none';
+				}
+			}
+			
+			traverseBF(parent, callback);
+		}
+		
+		// 展开
+		function unfold(parent) {
+			var child = parent.firstChild;
+			
+			while (child) {
+				if(child.nodeName === 'DIV') { // 跳过span和文本
+					child.style.display = 'block';
+				}
+				
+				child = child.nextSibling;
+			}
+		}
+		
+		//绑定按钮事件
+		function btnHandlers() {
+			// 查找按钮
+			var findButton = document.getElementById('find');
+			
+			findButton.onclick = function() {
+				var data = document.getElementById('data').value;
+				var tree = document.getElementById('multipleTree'); 
+				var keyNode;
+				
+				var callback = function(n) {
+					var key;
+					var child;
+					
+					child = n.firstChild;
+					while (child) {
+						if (child.nodeType === 3) {
+							key = child.nodeValue;
+							break;
+						}
+						
+						child = child.nextSibling;
+					}
+					
+					if ( key === data) {
+						n.style.backgroundColor = 'red';
+						
+						keyNode = n;
+					}
+				}
+				
+				reset();
+				
+				traverseBF(tree,callback);
+				
+				// 展开查找元素
+				if (!keyNode) {
+					alert('该文件夹不存在！');
+				} else {
+					var parent = keyNode.parentNode;
+					
+					while (parent !== tree.parentNode) {
+						unfold(parent);
+						parent = parent.parentNode;
+					}
+				}
+			}
+			
+			// 新建按钮
+			var insertButton = document.getElementById('insert');
+			
+			insertButton.onclick = function() {
+				var data = document.getElementById('data').value;
+				if (!data) {
+					alert('文件夹名称不能为空！');
+					return;
+				}
+				
+				// 查找父节点
+				var tree = document.getElementById('multipleTree'); 
+				var parent;
+				var callback = function(n) {
+					if (n.style.backgroundColor === 'green') {
+						
+						parent = n;
+					}
+				}
+				
+				traverseBF(tree,callback);
+				
+				if (!parent) {
+					alert('请选择插入的节点！');
+				} else {
+					node(data, parent);
+				}
+			}
+			
+			// 删除按钮
+			var removeButton = document.getElementById('remove');
+			
+			removeButton.onclick = function() {
+				var tree = document.getElementById('multipleTree'); 
+				var delNode;
+				var callback = function(n) {
+					if (n.style.backgroundColor === 'green') {
+						delNode = n;
+					}
+				}
+				
+				traverseBF(tree,callback);
+				
+				if (!delNode) {
+					alert('请选择删除的节点！');
+				} else {
+					if (delNode === tree) {
+						alert('不能删除根节点！');
+					} else {
+						// 删除后，若父节点无子节点，则删除父节点之前的箭头和数据标记
+						if (delNode.parentNode.childElementCount === 2) {
+							var parent = delNode.parentNode;
+							
+							parent.removeChild(parent.firstChild); // 删除父节点的箭头
+							parent.style.marginLeft = '2em'; // 调整父节点的位置
+							
+							parent.removeAttribute('data'); // 删除父节点data标记
+						}
+						
+						delNode.parentNode.removeChild(delNode);
+					}
+				}
+			}
+		}
+		
+		window.onload = function() {
+			multipleTree();
+			btnHandlers();
+		}
+	</script>
+</body>
+
+</html>
